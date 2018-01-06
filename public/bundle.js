@@ -985,6 +985,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+//const key = "fba0baa10095b78d"
+
 var App = function (_React$Component) {
   _inherits(App, _React$Component);
 
@@ -993,23 +995,47 @@ var App = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-    _this.state = { zipcode: "00000" };
+    _this.state = { zipcode: "", display: false };
     _this.setZipcode = _this.setZipcode.bind(_this);
     return _this;
   }
 
   _createClass(App, [{
+    key: 'processData',
+    value: function processData(data) {
+      //console.log(data)
+      this.setState({
+        feelsLike: data.current_observation.feelslike_string,
+        location: data.current_observation.display_location.full,
+        currentTemperature: data.current_observation.temp_f,
+        humidity: data.current_observation.relative_humidity
+      });
+      console.log(this.state);
+      //this.render()
+    }
+  }, {
     key: 'setZipcode',
     value: function setZipcode(code) {
+      var _this2 = this;
+
       console.log(code);
-      console.log("hey there");
+      //console.log("hey there")
+      fetch("http://api.wunderground.com/api/fba0baa10095b78d/conditions/q/" + code + ".json").then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.processData(r);
+      }).catch(function (error) {
+        console.log(error);
+      });
       this.setState({
-        zipcode: code
+        zipcode: code,
+        display: true
       });
     }
   }, {
     key: 'render',
     value: function render() {
+      console.log("render");
       return _react2.default.createElement(
         'div',
         { className: 'container' },
@@ -1020,9 +1046,38 @@ var App = function (_React$Component) {
         ),
         _react2.default.createElement(_ZipForm2.default, { setZip: this.setZipcode }),
         _react2.default.createElement(
-          'p',
+          'center',
           null,
-          this.state.zipcode
+          _react2.default.createElement(
+            'h2',
+            null,
+            'zipcode: ',
+            this.state.zipcode
+          ),
+          _react2.default.createElement(
+            'h2',
+            null,
+            'feels like: ',
+            this.state.feelsLike
+          ),
+          _react2.default.createElement(
+            'h2',
+            null,
+            'location: ',
+            this.state.location
+          ),
+          _react2.default.createElement(
+            'h2',
+            null,
+            'current temperature: ',
+            this.state.currentTemperature
+          ),
+          _react2.default.createElement(
+            'h2',
+            null,
+            'humidity: ',
+            this.state.humidity
+          )
         )
       );
     }
